@@ -27,7 +27,4 @@ export class UserEntity {
 
   @Column({ nullable: true })
   avatarId?: number;
-
-  // @Column({ length: 60 })
-  // signupVerifyToken: string;
 }

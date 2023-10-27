@@ -1,12 +1,27 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from './app.module';
+// import { ConfigService } from '@nestjs/config';
+// import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+// import { join } from 'path';
 
 import * as morgan from 'morgan';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  // const configService = new ConfigService();
+  // const grpcUrl = configService.get('GRPC_CONNECTION_URL');
+  // console.log(grpcUrl);
+  // app.connectMicroservice<MicroserviceOptions>({
+  //   transport: Transport.GRPC,
+  //   options: {
+  //     package: 'comments',
+  //     protoPath: join(__dirname, 'comments/comment.proto'),
+  //     url: grpcUrl,
+  //   },
+  // });
+
   const prefix = '/api/v1';
   app.setGlobalPrefix(prefix);
   app.enableCors({

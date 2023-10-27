@@ -1,18 +1,31 @@
-import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@Controller()
+@Controller('comments')
+@ApiTags('Comments API')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
+  @Post()
   @MessagePattern('createComment')
-  create(@Payload() createCommentDto: CreateCommentDto) {
-    return this.commentsService.create(createCommentDto);
+  @ApiOperation({ summary: 'Creates Comment', description: 'Insert Comment into a Blog Post including Author' })
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth('access-token')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  create(@Payload() createCommentDto: CreateCommentDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
+    // req.user.userId = 1;
+    console.log(file);
+    return this.commentsService.create(1, createCommentDto);
   }
 
+  @Get()
   @MessagePattern('findAllComments')
   findAll() {
     return this.commentsService.findAll();
