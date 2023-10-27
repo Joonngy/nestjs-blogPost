@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from '@nestjs/platform-express';
 import { BlogEntity } from './blog.entity';
 import { CategoryEntity } from '../category/category.entity';
+import { UserEntity } from '../users/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BlogEntity, CategoryEntity]),
+    TypeOrmModule.forFeature([BlogEntity, CategoryEntity, UserEntity]),
     MulterModule.register({
       dest: './uploads',
     }),

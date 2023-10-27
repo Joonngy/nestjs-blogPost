@@ -1,30 +1,46 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { UserLoginDto } from './dto/login-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBody, ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { StringSchema } from 'joi';
+import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { AddAvatarDto } from './dto/avatar-user.dto';
 
 @Controller('users')
 @ApiTags('User API')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('Add')
+  @Post('')
   @ApiOperation({ summary: 'Creates User', description: 'Contains UserName and password' })
-  @ApiBody({
-    schema: {
-      properties: {
-        userName: { type: 'string' },
-        password: { type: 'string' },
-      },
-    },
-  })
   async create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.createUser(createUserDto);
+    const { userName, email, password } = createUserDto;
+    return this.usersService.createUser(userName, email, password);
   }
 
-  @Get()
+  @Post('avatar')
+  @ApiOperation({ summary: 'Creates Avatar', description: 'Adds an Avatar file into the User' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  async addAvatar(@Body() avatarDto: AddAvatarDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
+    console.log(avatarDto);
+    return this.usersService.addAvatar(req.user.userId, file.buffer, file.originalname);
+  }
+
+  @Post('login')
+  @ApiOperation({ summary: 'Login User', description: 'Enter Email and Password to Login' })
+  @UseGuards(LocalAuthGuard)
+  async login(@Request() req, @Body() dto: UserLoginDto) {
+    console.log(dto);
+    return req.user;
+  }
+
+  @Get('')
   @ApiOperation({ summary: 'Read All Users', description: 'Contains ID Number, Username, and Password' })
   async findAll() {
     return this.usersService.findAll();
@@ -32,27 +48,26 @@ export class UsersController {
 
   @Get(':userName')
   @ApiOperation({ summary: 'Read a User of Requested Username', description: 'Contains ID Number, Username, and Password' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   findOne(@Param('userName') userName: string) {
+    console.log('get user');
     return this.usersService.findOneByUserName(userName);
   }
 
-  @Patch(':userName')
-  @ApiBody({
-    schema: {
-      properties: {
-        userName: { type: 'string' },
-        password: { type: 'string' },
-      },
-    },
-  })
+  @Patch('')
   @ApiOperation({ summary: 'Read a User of Requested ID and Change Password', description: 'Get User Information and Change Password' })
-  update(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  update(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(req, updateUserDto);
   }
 
-  @Delete(':userName')
+  @Delete(':id')
   @ApiOperation({ summary: 'Read a User of Requested ID and Remove', description: 'Get User Information and Remove' })
-  remove(@Param('userName') userName: string) {
-    return this.usersService.remove(userName);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  remove(@Param('id') id: number) {
+    return this.usersService.remove(id);
   }
 }

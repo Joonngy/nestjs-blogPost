@@ -23,11 +23,23 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
-  // app.use(helmet());
   app.use(morgan('dev'));
   // app.use(cookieParser());
 
-  const config = new DocumentBuilder().setTitle('BLOG API').setVersion('1.0').setDescription('For API Documentation').build();
+  const config = new DocumentBuilder()
+    .setTitle('BLOG API')
+    .setVersion('1.0')
+    .setDescription('For API Documentation')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        name: 'JWT',
+        in: 'header',
+      },
+      'access-token',
+    )
+    .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(`${prefix}/api-docs`, app, document, {

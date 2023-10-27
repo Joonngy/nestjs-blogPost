@@ -1,6 +1,7 @@
-import BaseEntity from '../base.entity';
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, UpdateDateColumn } from 'typeorm';
+import BaseEntity from '../model/base.entity';
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, UpdateDateColumn } from 'typeorm';
 import { CategoryEntity } from '../category/category.entity';
+import { UserEntity } from 'src/users/user.entity';
 
 @Entity()
 export class BlogEntity extends BaseEntity {
@@ -10,7 +11,21 @@ export class BlogEntity extends BaseEntity {
   @UpdateDateColumn()
   updated;
 
-  @Column()
+  @ManyToOne(() => UserEntity, (userEntity) => userEntity.blog, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    cascade: true,
+  })
+  @JoinColumn({ name: 'authorId' })
+  author: UserEntity;
+
+  @Column({ nullable: false })
+  authorId: number;
+
+  @Column({ nullable: false })
+  status: string;
+
+  @Column({ nullable: false })
   content: string;
 
   @Column({

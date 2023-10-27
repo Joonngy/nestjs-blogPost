@@ -9,6 +9,8 @@ export class CategoryEntity {
   @Column({ unique: true })
   name: string;
 
-  @ManyToMany(() => BlogEntity, (blogEntity) => blogEntity.category)
+  @ManyToMany(() => BlogEntity, (blogEntity) => blogEntity.category, {
+    onDelete: 'CASCADE',
+  })
   blog: BlogEntity[];
 }
