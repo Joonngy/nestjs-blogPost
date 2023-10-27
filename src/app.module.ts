@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { dataSourceOptions } from 'db/data-source';
 import { FileModule } from './file/file.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { FileModule } from './file/file.module';
     BlogsModule,
     CategoryModule,
     FileModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [],
