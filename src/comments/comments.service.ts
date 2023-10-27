@@ -14,9 +14,17 @@ export class CommentsService {
   ) {}
 
   @GrpcMethod()
-  async create(userId: number, comment: CreateCommentDto) {
-    const newComment = await this.commentsRepository.create(comment);
-    await this.commentsRepository.save(newComment);
+  async create(userId: number, commentDto: CreateCommentDto) {
+    const newComment = new CommentEntity();
+    newComment.comment = commentDto.comment;
+    // newComment.author =
+    // newComment.attachment =
+    // newComment.blogPost =
+
+    const result = await this.commentsRepository.save(newComment);
+
+    //Exception
+
     return newComment;
   }
 
