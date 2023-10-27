@@ -1,28 +1,29 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import * as typeorm from '@nestjs/typeorm';
+import { BadRequestException, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CategoryEntity } from './category.entity';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateCategoryDto } from './dto/create-category.dto';
 
 @Injectable()
 export class CategoryService {
   constructor(
-    @typeorm.InjectRepository(CategoryEntity)
+    @InjectRepository(CategoryEntity)
     private categoryRepository: Repository<CategoryEntity>,
   ) {}
 
-  async create(id: number, name: string): Promise<CategoryEntity> {
-    const category = new CategoryEntity();
-    category.id = id;
-    category.name = name;
+  async create(categoryInfo: CreateCategoryDto): Promise<CategoryEntity> {
+    const categoryExist = await this.categoryRepository.findOne({ where: { name: categoryInfo.name } });
 
-    const result = await this.categoryRepository.save(category);
-
-    if (result == null) {
-      throw new BadRequestException('ID does not exist');
+    if (categoryExist) {
+      throw new UnprocessableEntityException('Category Name Already Exists');
     }
 
-    return result;
+    const category = new CategoryEntity();
+    category.id = categoryInfo.id;
+    category.name = categoryInfo.name;
+
+    return await this.categoryRepository.save(category);
   }
 
   async findAll(): Promise<CategoryEntity[]> {
@@ -35,40 +36,45 @@ export class CategoryService {
     return result;
   }
 
-  async findOne(id: number): Promise<CategoryEntity> {
-    const result = await this.categoryRepository.findOneBy({ id });
+  async findOne(name: string): Promise<CategoryEntity> {
+    const result = await this.categoryRepository.findOne({ where: { name: name } });
 
     if (result == null) {
-      throw new BadRequestException('ID does not exist');
+      throw new BadRequestException('Category does not exist');
     }
 
     return result;
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<CategoryEntity> {
-    console.log(updateCategoryDto);
+  async update(name: string, updateCategoryDto: UpdateCategoryDto): Promise<CategoryEntity> {
+    const category = await this.categoryRepository.findOne({ where: { name: name } });
 
-    const blog = await this.categoryRepository.findOne({ where: { id } });
-
-    if (blog == null) {
-      throw new BadRequestException('Id does not exist');
+    if (category == null) {
+      throw new BadRequestException('Category does not exist');
     }
-    // this.blogRepository.update
-    this.categoryRepository.merge(blog, updateCategoryDto);
-    const result = this.categoryRepository.save(blog);
+
+    if ((await this.categoryRepository.findOne({ where: { name: updateCategoryDto.name } })) !== null) {
+      throw new BadRequestException('Category Name is Duplicated');
+    }
+
+    this.categoryRepository.merge(category, updateCategoryDto);
+    const result = this.categoryRepository.save(category);
 
     if (result == null) {
-      throw new BadRequestException('Cannot Save');
+      throw new BadRequestException('Cannot Save the Category');
     }
 
     return result;
   }
 
-  async remove(id: number): Promise<boolean> {
-    const result = await this.categoryRepository.delete(id);
+  async remove(name: string): Promise<boolean> {
+    console.log(name);
+    const result = await this.categoryRepository.delete({ name: name });
 
-    if (result == null) {
-      throw new BadRequestException('Cannot Delete');
+    console.log(result);
+
+    if (result.affected == 0) {
+      throw new BadRequestException('No Category Found');
     }
 
     return true;

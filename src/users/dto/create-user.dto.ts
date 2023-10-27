@@ -1,20 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, Matches } from 'class-validator';
 
 export class CreateUserDto {
   readonly id: number;
+
+  @ApiProperty({
+    example: 'joonnngy@dnsevercorp.com',
+    description: 'Input Username',
+  })
+  @IsString()
+  readonly email: string;
 
   @ApiProperty({
     example: 'joonnngy',
     description: 'Input Username',
   })
   @IsString()
-  userName: string;
+  readonly userName: string;
 
   @ApiProperty({
-    example: 'password',
+    example: 'Password1!',
     description: 'Input Password',
   })
   @IsString()
-  password: string;
+  @Matches(/^[A-Za-z\d!@#$%^&*()]{8,30}$/)
+  readonly password: string;
 }
