@@ -1,72 +1,89 @@
-import { Controller, Get, Post, Body, Param, Delete, UseInterceptors, UploadedFiles, Patch, Response } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseInterceptors, UploadedFiles, Patch, Response, UseGuards, Req, Query } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
-import { ApiBody, ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { BlogEntity } from './blog.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { SearchBlogDto } from './dto/search-blog.dto';
 
 @Controller('blogs')
 @ApiTags('Blog API')
-// @ApiBody('Everything about blogs')
 export class BlogsController {
   constructor(private readonly blogsService: BlogsService) {}
 
-  @Post('upload')
+  @Post('')
   @ApiOperation({ summary: 'Uploads Blog Post', description: 'Contains Title, Contents, Categories and Attachments' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(AnyFilesInterceptor())
-  @ApiBody({
-    schema: {
-      properties: {
-        name: { type: 'string' },
-        content: { type: 'string' },
-        categoryName: { type: 'string[]' },
-      },
-    },
-  })
-  create(@Body() blogInfo: CreateBlogDto, @UploadedFiles() files: Array<Express.Multer.File>) {
-    return this.blogsService.createBlog(blogInfo, files);
+  create(@Req() req: any, @Body() blogInfo: CreateBlogDto, @UploadedFiles() files: Array<Express.Multer.File>) {
+    return this.blogsService.createBlog(blogInfo, req, files);
   }
 
   @Get()
   @ApiOperation({ summary: 'Read all Blog Posts', description: 'Contains Title, Contents, Categories and Attachments' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   async findAll(): Promise<BlogEntity[]> {
     return await this.blogsService.findAll();
   }
 
-  @Get('name/:name')
-  @ApiOperation({ summary: 'Read all Blog Posts of requested title', description: 'Contains Title, Contents, Categories and Attachments' })
-  findByTitle(@Param('name') name: string): Promise<BlogEntity[]> {
-    return this.blogsService.findByName(name);
-  }
-
-  @Get('id/:id')
-  @ApiOperation({ summary: 'Read a Blog Post of requested id', description: 'Contains Title, Contents, Categories and Attachments' })
+  @Get(':id')
+  @ApiOperation({ summary: 'Read all Blog Posts of requested id', description: 'Contains Title, Contents, Categories and Attachments' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   async findById(@Param('id') id: number): Promise<BlogEntity> {
-    return await this.blogsService.findById(id);
+    return this.blogsService.findById(id);
   }
 
-  @Get('id/:id/attachment')
+  @Get('type/option')
+  @ApiOperation({ summary: 'Search Blog Posts of requested ENUM', description: 'Contains Title, Contents, Categories and Attachments' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  async findBySearch(@Query() searchDto: SearchBlogDto): Promise<BlogEntity[]> {
+    return this.blogsService.findBySearch(searchDto);
+  }
+
+  @Get('my-blogs')
+  @ApiOperation({ summary: 'Read All My Blog Post', description: 'Contains Title, Contents, Categories and Attachments' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  async findMyBlog(@Req() req: any): Promise<BlogEntity[]> {
+    return await this.blogsService.findMyBlog(req);
+  }
+
+  @Get('attachment/:id')
   @ApiOperation({ summary: 'Read All Attachment from requested id Blog Post', description: 'Saves the Attachment' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   async findByIdDownloadZip(@Param('id') id: number, @Response() res): Promise<BlogEntity> {
     return await this.blogsService.findByIdDownloadZip(id, res);
   }
 
-  @Get('id/:id/attachment/:name')
+  @Get('attachment/:id/:name')
   @ApiOperation({ summary: 'Read a specific Attachment from requested id Blog Post', description: 'Saves the Attachments' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   async findByIdDownloadFile(@Param('id') id: number, @Param('name') name: string, @Response() res): Promise<BlogEntity> {
     return await this.blogsService.findByIdDownloadFile(id, name, res);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Updates the blog post', description: 'Contains Title, Contents, Categories and Attachments' })
-  async update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto): Promise<BlogEntity> {
-    return await this.blogsService.update(+id, updateBlogDto);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  async update(@Param('id') id: number, @Req() req: any, @Body() updateBlogDto: UpdateBlogDto): Promise<BlogEntity> {
+    return await this.blogsService.update(id, req, updateBlogDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Deletes the blog post', description: 'Contains Title, Contents, Categories and Attachments' })
-  async remove(@Param('id') id: string): Promise<boolean> {
-    return await this.blogsService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  async remove(@Req() req: any, @Param('id') id: number): Promise<boolean> {
+    return await this.blogsService.remove(id, req);
   }
 }

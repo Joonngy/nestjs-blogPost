@@ -1,44 +1,33 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as Joi from 'joi';
 import { BlogsModule } from './blogs/blogs.module';
-import { BlogEntity } from './blogs/blog.entity';
-import { CategoryEntity } from './category/category.entity';
 import { CategoryModule } from './category/category.module';
+import authConfig from './config/authConfig';
+import { validationSchema } from './config/validationSchema';
 import { UsersModule } from './users/users.module';
-import { UserEntity } from './users/user.entity';
+import { AuthModule } from './auth/auth.module';
+import { dataSourceOptions } from 'db/data-source';
+import { FileModule } from './file/file.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
-      validationSchema: Joi.object({
-        DB_HOST: Joi.string().required(),
-        DB_PORT: Joi.string().required(),
-        DB_USERNAME: Joi.string().required(),
-        DB_PASSWORD: Joi.string().required(),
-        DB_NAME: Joi.string().required(),
-        DB_CHARSET: Joi.string().required(),
-        DB_TIMEZONE: Joi.string().required(),
-      }),
+      load: [authConfig],
+      validationSchema,
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [BlogEntity, CategoryEntity, UserEntity],
-      synchronize: true,
-      logging: true,
-      // entities: [__dirname + '/entities/*{.ts,.js}'],
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
+    AuthModule,
+    UsersModule,
     BlogsModule,
     CategoryModule,
-    UsersModule,
+    FileModule,
+    CommentsModule,
   ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
