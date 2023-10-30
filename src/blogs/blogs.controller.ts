@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Body, Param, Delete, UseInterceptors, UploadedFiles, Patch, Response, UseGuards, Req, Query } from '@nestjs/common';
-import { BlogsService } from './blogs.service';
-import { CreateBlogDto } from './dto/create-blog.dto';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UpdateBlogDto } from './dto/update-blog.dto';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
-import { BlogEntity } from './blog.entity';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CreateBlogDto } from './dto/create-blog.dto';
+import { UpdateBlogDto } from './dto/update-blog.dto';
 import { SearchBlogDto } from './dto/search-blog.dto';
+import { BlogsService } from './blogs.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Blog } from './blog.entity';
 
 @Controller('blogs')
 @ApiTags('Blog API')
@@ -27,7 +27,7 @@ export class BlogsController {
   @ApiOperation({ summary: 'Read all Blog Posts', description: 'Contains Title, Contents, Categories and Attachments' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  async findAll(): Promise<BlogEntity[]> {
+  async findAll(): Promise<Blog[]> {
     return await this.blogsService.findAll();
   }
 
@@ -35,7 +35,7 @@ export class BlogsController {
   @ApiOperation({ summary: 'Read all Blog Posts of requested id', description: 'Contains Title, Contents, Categories and Attachments' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  async findById(@Param('id') id: number): Promise<BlogEntity> {
+  async findById(@Param('id') id: number): Promise<Blog> {
     return this.blogsService.findById(id);
   }
 
@@ -43,7 +43,7 @@ export class BlogsController {
   @ApiOperation({ summary: 'Search Blog Posts of requested ENUM', description: 'Contains Title, Contents, Categories and Attachments' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  async findBySearch(@Query() searchDto: SearchBlogDto): Promise<BlogEntity[]> {
+  async findBySearch(@Query() searchDto: SearchBlogDto): Promise<Blog[]> {
     return this.blogsService.findBySearch(searchDto);
   }
 
@@ -51,7 +51,7 @@ export class BlogsController {
   @ApiOperation({ summary: 'Read All My Blog Post', description: 'Contains Title, Contents, Categories and Attachments' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  async findMyBlog(@Req() req: any): Promise<BlogEntity[]> {
+  async findMyBlog(@Req() req: any): Promise<Blog[]> {
     return await this.blogsService.findMyBlog(req);
   }
 
@@ -59,7 +59,7 @@ export class BlogsController {
   @ApiOperation({ summary: 'Read All Attachment from requested id Blog Post', description: 'Saves the Attachment' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  async findByIdDownloadZip(@Param('id') id: number, @Response() res): Promise<BlogEntity> {
+  async findByIdDownloadZip(@Param('id') id: number, @Response() res): Promise<Blog> {
     return await this.blogsService.findByIdDownloadZip(id, res);
   }
 
@@ -67,7 +67,7 @@ export class BlogsController {
   @ApiOperation({ summary: 'Read a specific Attachment from requested id Blog Post', description: 'Saves the Attachments' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  async findByIdDownloadFile(@Param('id') id: number, @Param('name') name: string, @Response() res): Promise<BlogEntity> {
+  async findByIdDownloadFile(@Param('id') id: number, @Param('name') name: string, @Response() res): Promise<Blog> {
     return await this.blogsService.findByIdDownloadFile(id, name, res);
   }
 
@@ -75,7 +75,7 @@ export class BlogsController {
   @ApiOperation({ summary: 'Updates the blog post', description: 'Contains Title, Contents, Categories and Attachments' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  async update(@Param('id') id: number, @Req() req: any, @Body() updateBlogDto: UpdateBlogDto): Promise<BlogEntity> {
+  async update(@Param('id') id: number, @Req() req: any, @Body() updateBlogDto: UpdateBlogDto): Promise<Blog> {
     return await this.blogsService.update(id, req, updateBlogDto);
   }
 

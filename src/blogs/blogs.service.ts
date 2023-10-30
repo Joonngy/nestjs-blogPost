@@ -2,42 +2,41 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BlogEntity } from './blog.entity';
-import { CategoryEntity } from 'src/category/category.entity';
+import { Blog } from './blog.entity';
+import { Category } from 'src/category/category.entity';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { createReadStream } from 'fs';
 import * as archiver from 'archiver';
 import { Search, SearchBlogDto } from './dto/search-blog.dto';
-import { UserEntity } from 'src/users/user.entity';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class BlogsService {
   constructor(
-    @InjectRepository(BlogEntity)
-    private readonly blogRepository: Repository<BlogEntity>,
-    @InjectRepository(CategoryEntity)
-    private readonly categoryRepository: Repository<CategoryEntity>,
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(Blog)
+    private readonly blogRepository: Repository<Blog>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
-  async createBlog(blogInfo: CreateBlogDto, req: any, files: Array<Express.Multer.File>): Promise<BlogEntity> {
-    console.log(blogInfo);
-    const newBlog = new BlogEntity();
+  async createBlog(blogInfo: CreateBlogDto, req: any, files: Array<Express.Multer.File>): Promise<Blog> {
+    const newBlog = new Blog();
     newBlog.name = blogInfo.name;
     newBlog.status = blogInfo.status;
     newBlog.content = blogInfo.content;
-    newBlog.author = await this.userRepository.createQueryBuilder().select('userEntity').from(UserEntity, 'userEntity').where('userEntity.id = :id', { id: req.user.userId }).getOne();
+    newBlog.author = await this.userRepository.createQueryBuilder().select('userEntity').from(User, 'userEntity').where('userEntity.id = :id', { id: req.user.userId }).getOne();
     newBlog.authorId = req.user.userId;
 
     const categoryNames: string[] = blogInfo.categoryNames.split(',');
-    const categories: CategoryEntity[] = [];
+    const categories: Category[] = [];
 
     for (const c of categoryNames) {
-      let result = await this.categoryRepository.createQueryBuilder().select('categoryEntity').from(CategoryEntity, 'categoryEntity').where('categoryEntity.name = :name', { name: c }).getOne();
+      let result = await this.categoryRepository.createQueryBuilder().select('categoryEntity').from(Category, 'categoryEntity').where('categoryEntity.name = :name', { name: c }).getOne();
       if (result === null) {
-        await this.categoryRepository.createQueryBuilder().insert().into(CategoryEntity).values({ name: c }).execute();
-        result = await this.categoryRepository.createQueryBuilder().select('categoryEntity').from(CategoryEntity, 'categoryEntity').where('categoryEntity.name = :name', { name: c }).getOne();
+        await this.categoryRepository.createQueryBuilder().insert().into(Category).values({ name: c }).execute();
+        result = await this.categoryRepository.createQueryBuilder().select('categoryEntity').from(Category, 'categoryEntity').where('categoryEntity.name = :name', { name: c }).getOne();
       }
       categories.push(result);
     }
@@ -53,7 +52,7 @@ export class BlogsService {
     return await this.blogRepository.save(newBlog);
   }
 
-  async findAll(): Promise<BlogEntity[]> {
+  async findAll(): Promise<Blog[]> {
     const result = this.blogRepository.find();
 
     if (result == null) {
@@ -63,7 +62,7 @@ export class BlogsService {
     return result;
   }
 
-  async findById(id: number): Promise<BlogEntity> {
+  async findById(id: number): Promise<Blog> {
     const result = await this.blogRepository.findOneBy({ id });
 
     if (result == null) {
@@ -73,8 +72,8 @@ export class BlogsService {
     return result;
   }
 
-  async findBySearch(searchDto: SearchBlogDto): Promise<BlogEntity[]> {
-    let result: BlogEntity[];
+  async findBySearch(searchDto: SearchBlogDto): Promise<Blog[]> {
+    let result: Blog[];
     if (searchDto.search === Search.TITLE) {
       result = await this.blogRepository.findBy({ name: searchDto.name });
     } else if (searchDto.search === Search.AUTHOR) {
@@ -89,7 +88,7 @@ export class BlogsService {
       throw new BadRequestException('Author Does not exist');
     }
 
-    const finalResult: BlogEntity[] = [];
+    const finalResult: Blog[] = [];
     for (const r of result) {
       if (r.status === 'true') {
         finalResult.push(r);
@@ -102,7 +101,7 @@ export class BlogsService {
     return finalResult;
   }
 
-  async findMyBlog(req: any): Promise<BlogEntity[]> {
+  async findMyBlog(req: any): Promise<Blog[]> {
     const result = await this.blogRepository.findBy({ author: req.user.username });
 
     if (result == null) {
@@ -112,7 +111,7 @@ export class BlogsService {
     return result;
   }
 
-  async findByIdDownloadZip(id: number, res: any): Promise<BlogEntity> {
+  async findByIdDownloadZip(id: number, res: any): Promise<Blog> {
     const result = await this.blogRepository.findOneBy({ id });
 
     if (result == null) {
@@ -144,7 +143,7 @@ export class BlogsService {
     return result;
   }
 
-  async findByIdDownloadFile(id: number, name: string, res: any): Promise<BlogEntity> {
+  async findByIdDownloadFile(id: number, name: string, res: any): Promise<Blog> {
     const result = await this.blogRepository.findOneBy({ id });
 
     if (result == null) {
@@ -166,8 +165,7 @@ export class BlogsService {
     return result;
   }
 
-  async update(id: number, req: any, updateBlogDto: UpdateBlogDto): Promise<BlogEntity> {
-    console.log(updateBlogDto);
+  async update(id: number, req: any, updateBlogDto: UpdateBlogDto): Promise<Blog> {
     const blog = await this.blogRepository.findOne({ where: { id: id } });
 
     if (blog == null) {

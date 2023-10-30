@@ -47,7 +47,6 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   async remove(@Param('name') name: string) {
-    console.log(name);
     return await this.categoryService.remove(name);
   }
 }
