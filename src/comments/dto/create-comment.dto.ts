@@ -24,5 +24,5 @@ export class CreateCommentDto {
     description: 'Any file can be uploaded',
     required: false,
   })
-  attachment: any;
+  file: any;
 }

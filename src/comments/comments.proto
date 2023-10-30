@@ -3,22 +3,25 @@ syntax = "proto3";
 package comments;
 
 
-service SubscribersService {
-  rpc GetAllSubscribers (GetAllSubscribersParams) returns (SubscribersResponse) {}
-  rpc AddSubscriber (CreateSubscriberDto) returns (Subscriber) {}
+service CommentsService {
+  rpc create (number,CreateCommentDto,Buffer,string) returns (CommentEntity) {}
+  rpc findAll () returns (CommentEntity) {}
 }
 
-message Subscriber {
+message CommentEntity {
   int32 id = 1;
-  string email = 2;
-  string name = 3;
+  string comment = 2;
+  BlogEntity blog = 3;
+  int32 commentBlogId = 4;
+  UserEntity author = 5;
+  int32 commentAuthor = 6;
+  FileEntity attachment = 7;
+  int32 commentAttachmentId = 8;
 }
  
-message CreateSubscriberDto {
-  string email = 1;
-  string name = 2;
-}
-
-message SubscribersResponse {
-  repeated Subscriber data = 1;
+message CreateCommentDto {
+  int32 id = 1;
+  int32 blogId = 2;
+  string comment = 3;
+  any file = 4;
 }

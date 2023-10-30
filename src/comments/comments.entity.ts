@@ -1,7 +1,7 @@
 import { BlogEntity } from '../blogs/blog.entity';
 import { FileEntity } from '../file/file.entity';
 import { UserEntity } from '../users/user.entity';
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class CommentEntity {
@@ -11,15 +11,34 @@ export class CommentEntity {
   @Column()
   comment: string;
 
-  @JoinColumn({ name: 'commentBlogPost' })
-  @OneToOne(() => BlogEntity, { nullable: false })
-  blogPost: BlogEntity;
+  @ManyToOne(() => BlogEntity, (blogEntity) => blogEntity.comment, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    cascade: true,
+    nullable: false,
+  })
+  @JoinColumn({ name: 'commentBlogId' })
+  blog: BlogEntity;
 
-  @JoinColumn({ name: 'commentAuthor' })
-  @OneToOne(() => UserEntity, { nullable: false })
+  @Column({ nullable: false })
+  commentBlogId?: number;
+
+  @ManyToOne(() => UserEntity, (userEntity) => userEntity.comments, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    cascade: true,
+    nullable: false,
+  })
+  @JoinColumn({ name: 'commentAuthorId' })
   author: UserEntity;
 
-  @JoinColumn({ name: 'commentAttachment' })
+  @Column({ nullable: false })
+  commentAuthorId?: number;
+
+  @JoinColumn({ name: 'commentAttachmentId' })
   @OneToOne(() => FileEntity, { nullable: true })
   attachment?: FileEntity;
+
+  @Column({ nullable: true })
+  commentAttachmentId?: number;
 }

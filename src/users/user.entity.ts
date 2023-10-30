@@ -1,4 +1,5 @@
 import { BlogEntity } from 'src/blogs/blog.entity';
+import { CommentEntity } from 'src/comments/comments.entity';
 import { FileEntity } from 'src/file/file.entity';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -15,6 +16,11 @@ export class UserEntity {
 
   @Column({ length: 30 })
   password: string;
+
+  @OneToMany(() => CommentEntity, (commentEntity) => commentEntity.author, {
+    nullable: true,
+  })
+  comments: CommentEntity[];
 
   @OneToMany(() => BlogEntity, (blogEntity) => blogEntity.author, {
     nullable: true,

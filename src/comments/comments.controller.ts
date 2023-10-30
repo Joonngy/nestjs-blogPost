@@ -15,14 +15,16 @@ export class CommentsController {
   @Post()
   @MessagePattern('createComment')
   @ApiOperation({ summary: 'Creates Comment', description: 'Insert Comment into a Blog Post including Author' })
-  // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   create(@Payload() createCommentDto: CreateCommentDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
-    // req.user.userId = 1;
-    console.log(file);
-    return this.commentsService.create(1, createCommentDto);
+    if (file === undefined) {
+      return this.commentsService.create(req.user.userId, createCommentDto, null, null);
+    } else {
+      return this.commentsService.create(req.user.userId, createCommentDto, file.buffer, file.originalname);
+    }
   }
 
   @Get()

@@ -1,7 +1,8 @@
 import BaseEntity from '../model/base.entity';
-import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, UpdateDateColumn } from 'typeorm';
 import { CategoryEntity } from '../category/category.entity';
 import { UserEntity } from 'src/users/user.entity';
+import { CommentEntity } from 'src/comments/comments.entity';
 
 @Entity()
 export class BlogEntity extends BaseEntity {
@@ -41,6 +42,11 @@ export class BlogEntity extends BaseEntity {
     nullable: true,
   })
   savedPath: string[] = [];
+
+  @OneToMany(() => CommentEntity, (commentEntity) => commentEntity.blog, {
+    nullable: true,
+  })
+  comment: CommentEntity[];
 
   @ManyToMany(() => CategoryEntity, (categoryEntity) => categoryEntity.blog)
   @JoinTable({
