@@ -1,11 +1,11 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserInfo } from './interfaces/user-info.interface';
-import { FileService } from 'src/file/file.service';
-import { User } from './user.entity';
-import { File } from 'src/file/file.entity';
+import { UserInfo } from '../../../users/interfaces/user-info.interface';
+import { FileService } from 'src/app/modules/services/file.service';
+import { User } from '../entity/user.entity';
+import { File } from 'src/app/modules/entity/file.entity';
 import { hash } from 'bcrypt';
 
 @Injectable()

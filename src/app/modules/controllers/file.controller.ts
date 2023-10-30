@@ -1,8 +1,8 @@
 import { Controller, Get, Param, ParseIntPipe, Res, StreamableFile, UseGuards } from '@nestjs/common';
-import { FileService } from './file.service';
+import { FileService } from '../services/file.service';
 import { Readable } from 'stream';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/app/auth/guards/jwt-auth.guard';
 
 @Controller('file')
 @ApiTags('File API')

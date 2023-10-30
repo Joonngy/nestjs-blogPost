@@ -2,10 +2,10 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CommentsService } from '../services/comments.service';
+import { CreateCommentDto } from '../dto/create-comment.dto';
+import { UpdateCommentDto } from '../dto/update-comment.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 export interface FileInfo {
   fileBuffer: Buffer;

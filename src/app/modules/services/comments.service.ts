@@ -2,12 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GrpcMethod } from '@nestjs/microservices';
 import { Repository } from 'typeorm';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { Comment } from './comments.entity';
-import { User } from '../users/user.entity';
-import { Blog } from '../blogs/blog.entity';
-import { FileService } from '../file/file.service';
-import { FileInfo } from './comments.controller';
+import { CreateCommentDto } from '../dto/create-comment.dto';
+import { Comment } from '../entity/comments.entity';
+import { User } from '../entity/user.entity';
+import { Blog } from '../entity/blog.entity';
+import { FileService } from './file.service';
+import { FileInfo } from '../controllers/comments.controller';
 
 @Injectable()
 export class CommentsService {

@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Body, Param, Delete, UseInterceptors, UploadedFiles, Patch, Response, UseGuards, Req, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
-import { CreateBlogDto } from './dto/create-blog.dto';
-import { UpdateBlogDto } from './dto/update-blog.dto';
-import { SearchBlogDto } from './dto/search-blog.dto';
-import { BlogsService } from './blogs.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Blog } from './blog.entity';
+import { CreateBlogDto } from '../dto/create-blog.dto';
+import { UpdateBlogDto } from '../dto/update-blog.dto';
+import { SearchBlogDto } from '../dto/search-blog.dto';
+import { BlogsService } from '../services/blogs.service';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { Blog } from '../entity/blog.entity';
 
 @Controller('blogs')
 @ApiTags('Blog API')

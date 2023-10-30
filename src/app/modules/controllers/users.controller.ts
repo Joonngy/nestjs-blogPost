@@ -1,13 +1,13 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UsersService } from './users.service';
-import { UserLoginDto } from './dto/login-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { AddAvatarDto } from './dto/avatar-user.dto';
-import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UsersService } from '../services/users.service';
+import { UserLoginDto } from '../dto/login-user.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { AddAvatarDto } from '../dto/avatar-user.dto';
+import { LocalAuthGuard } from '../../auth/guards/local-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @Controller('users')
 @ApiTags('User API')

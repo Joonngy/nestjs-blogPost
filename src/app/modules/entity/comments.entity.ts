@@ -1,6 +1,6 @@
-import { Blog } from '../blogs/blog.entity';
-import { File } from '../file/file.entity';
-import { User } from '../users/user.entity';
+import { Blog } from './blog.entity';
+import { File } from './file.entity';
+import { User } from './user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

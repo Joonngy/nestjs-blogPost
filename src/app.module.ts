@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BlogsModule } from './blogs/blogs.module';
-import { CategoryModule } from './category/category.module';
+import { BlogsModule } from './app/modules/blogs.module';
+import { CategoryModule } from './app/modules/category.module';
 import authConfig from './config/authConfig';
 import { validationSchema } from './config/validationSchema';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { dataSourceOptions } from 'db/data-source';
-import { FileModule } from './file/file.module';
-import { CommentsModule } from './comments/comments.module';
+import { UsersModule } from './app/modules/users.module';
+import { AuthModule } from './app/auth/auth.module';
+import { dataSourceOptions } from 'src/migrations/data-source';
+import { FileModule } from './app/modules/file.module';
+import { CommentsModule } from './app/modules/comments.module';
 
 @Module({
   imports: [
