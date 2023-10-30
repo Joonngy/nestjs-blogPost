@@ -1,24 +1,24 @@
-import BaseEntity from '../model/base.entity';
+import Base from '../model/base.entity';
 import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, UpdateDateColumn } from 'typeorm';
-import { CategoryEntity } from '../category/category.entity';
-import { UserEntity } from 'src/users/user.entity';
-import { CommentEntity } from 'src/comments/comments.entity';
+import { Category } from '../category/category.entity';
+import { User } from 'src/users/user.entity';
+import { Comment } from 'src/comments/comments.entity';
 
 @Entity()
-export class BlogEntity extends BaseEntity {
+export class Blog extends Base {
   @CreateDateColumn()
   created;
 
   @UpdateDateColumn()
   updated;
 
-  @ManyToOne(() => UserEntity, (userEntity) => userEntity.blog, {
+  @ManyToOne(() => User, (userEntity) => userEntity.blog, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     cascade: true,
   })
   @JoinColumn({ name: 'authorId' })
-  author: UserEntity;
+  author: User;
 
   @Column({ nullable: false })
   authorId: number;
@@ -43,12 +43,12 @@ export class BlogEntity extends BaseEntity {
   })
   savedPath: string[] = [];
 
-  @OneToMany(() => CommentEntity, (commentEntity) => commentEntity.blog, {
+  @OneToMany(() => Comment, (commentEntity) => commentEntity.blog, {
     nullable: true,
   })
-  comment: CommentEntity[];
+  comment: Comment[];
 
-  @ManyToMany(() => CategoryEntity, (categoryEntity) => categoryEntity.blog)
+  @ManyToMany(() => Category, (categoryEntity) => categoryEntity.blog)
   @JoinTable({
     name: 'blog_category',
     joinColumn: {
@@ -58,5 +58,5 @@ export class BlogEntity extends BaseEntity {
       name: 'category_id',
     },
   })
-  category: CategoryEntity[];
+  category: Category[];
 }

@@ -1,43 +1,43 @@
-import { BlogEntity } from '../blogs/blog.entity';
-import { FileEntity } from '../file/file.entity';
-import { UserEntity } from '../users/user.entity';
+import { Blog } from '../blogs/blog.entity';
+import { File } from '../file/file.entity';
+import { User } from '../users/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class CommentEntity {
+export class Comment {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column()
   comment: string;
 
-  @ManyToOne(() => BlogEntity, (blogEntity) => blogEntity.comment, {
+  @ManyToOne(() => Blog, (blogEntity) => blogEntity.comment, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     cascade: true,
     nullable: false,
   })
   @JoinColumn({ name: 'commentBlogId' })
-  blog: BlogEntity;
+  blog: Blog;
 
   @Column({ nullable: false })
   commentBlogId?: number;
 
-  @ManyToOne(() => UserEntity, (userEntity) => userEntity.comments, {
+  @ManyToOne(() => User, (userEntity) => userEntity.comments, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     cascade: true,
     nullable: false,
   })
   @JoinColumn({ name: 'commentAuthorId' })
-  author: UserEntity;
+  author: User;
 
   @Column({ nullable: false })
   commentAuthorId?: number;
 
   @JoinColumn({ name: 'commentAttachmentId' })
-  @OneToOne(() => FileEntity, { nullable: true })
-  attachment?: FileEntity;
+  @OneToOne(() => File, { nullable: true })
+  attachment?: File;
 
   @Column({ nullable: true })
   commentAttachmentId?: number;

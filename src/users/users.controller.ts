@@ -28,7 +28,6 @@ export class UsersController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   async addAvatar(@Body() avatarDto: AddAvatarDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
-    console.log(avatarDto);
     return this.usersService.addAvatar(req.user.userId, file.buffer, file.originalname);
   }
 
@@ -36,7 +35,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Login User', description: 'Enter Email and Password to Login' })
   @UseGuards(LocalAuthGuard)
   async login(@Request() req, @Body() dto: UserLoginDto) {
-    console.log(dto);
+    dto.email;
     return req.user;
   }
 
@@ -51,7 +50,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   findOne(@Param('userName') userName: string) {
-    console.log('get user');
     return this.usersService.findOneByUserName(userName);
   }
 

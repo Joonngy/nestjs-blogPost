@@ -7,6 +7,11 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
+export interface FileInfo {
+  fileBuffer: Buffer;
+  fileOriginalName: string;
+}
+
 @Controller('comments')
 @ApiTags('Comments API')
 export class CommentsController {
@@ -20,10 +25,13 @@ export class CommentsController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   create(@Payload() createCommentDto: CreateCommentDto, @Req() req: any, @UploadedFile() file: Express.Multer.File) {
-    if (file === undefined) {
-      return this.commentsService.create(req.user.userId, createCommentDto, null, null);
-    } else {
-      return this.commentsService.create(req.user.userId, createCommentDto, file.buffer, file.originalname);
+    let fileInfo: FileInfo;
+    if (file !== undefined) {
+      fileInfo = {
+        fileBuffer: file.buffer,
+        fileOriginalName: file.originalname,
+      };
+      return this.commentsService.create(req.user.userId, createCommentDto, fileInfo);
     }
   }
 
@@ -40,7 +48,7 @@ export class CommentsController {
 
   @MessagePattern('updateComment')
   update(@Payload() updateCommentDto: UpdateCommentDto) {
-    return this.commentsService.update(updateCommentDto.id, updateCommentDto);
+    return this.commentsService.update(updateCommentDto.id);
   }
 
   @MessagePattern('removeComment')
