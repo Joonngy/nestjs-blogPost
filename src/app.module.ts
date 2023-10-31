@@ -7,15 +7,17 @@ import authConfig from './config/authConfig';
 import { validationSchema } from './config/validationSchema';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { dataSourceOptions } from 'db/data-source';
+import { dataSourceOptions } from './db/data-source';
 import { FileModule } from './file/file.module';
 import { CommentsModule } from './comments/comments.module';
+
+console.log('module: ' + process.env.NODE_ENV);
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
+      envFilePath: `src/config/.env.${process.env.NODE_ENV}`,
       load: [authConfig],
       validationSchema,
     }),
