@@ -1,21 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-
+import { SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
+import { createDocument } from './swagger/swagger';
+import { ConfigService } from './config/config.service';
 import * as morgan from 'morgan';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-
-  const prefix = '/api/v1';
-  app.setGlobalPrefix(prefix);
-  app.enableCors({
-    allowedHeaders: 'Content-Type',
-    methods: 'POST,GET,PUT,PATCH,DELETE,OPTIONS',
-    credentials: true,
-    origin: true,
-  });
+  const app = await NestFactory.create(AppModule, { cors: true });
+  const configService = app.get(ConfigService);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -24,28 +17,9 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
-  app.use(morgan('dev'));
+  app.use(morgan('dev')); /* For Log*/
 
-  const config = new DocumentBuilder()
-    .setTitle('BLOG API')
-    .setVersion('1.0')
-    .setDescription('For API Documentation')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        name: 'JWT',
-        in: 'header',
-      },
-      'access-token',
-    )
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(`${prefix}/api-docs`, app, document, {
-    customSiteTitle: 'BLOG API',
-  });
-
+  SwaggerModule.setup('api/v1', app, createDocument(app));
   const port = process.env.NODE_ENV === 'production' ? 80 : 3000;
   await app.listen(port);
 }

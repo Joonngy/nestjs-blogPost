@@ -3,9 +3,9 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserInfo } from '../../../users/interfaces/user-info.interface';
-import { FileService } from 'src/app/modules/services/file.service';
+import { FileService } from 'src/app/module/services/file.service';
 import { User } from '../entity/user.entity';
-import { File } from 'src/app/modules/entity/file.entity';
+import { File } from 'src/app/module/entity/file.entity';
 import { hash } from 'bcrypt';
 
 @Injectable()

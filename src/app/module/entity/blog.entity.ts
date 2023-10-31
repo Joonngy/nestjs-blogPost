@@ -1,8 +1,8 @@
 import Base from '../../../model/base.entity';
 import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, UpdateDateColumn } from 'typeorm';
 import { Category } from './category.entity';
-import { User } from 'src/app/modules/entity/user.entity';
-import { Comment } from 'src/app/modules/entity/comments.entity';
+import { User } from 'src/app/module/entity/user.entity';
+import { Comment } from 'src/app/module/entity/comments.entity';
 
 @Entity()
 export class Blog extends Base {

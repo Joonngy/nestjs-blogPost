@@ -1,4 +1,4 @@
-import { Blog } from 'src/app/modules/entity/blog.entity';
+import { Blog } from 'src/app/module/entity/blog.entity';
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

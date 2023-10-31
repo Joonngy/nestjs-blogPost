@@ -1,8 +1,13 @@
-FROM node:18-alpine
+FROM node:18
 
-RUN npm install -g http-server
+WORKDIR /app
 
-WORKDIR /usr/src/app
+COPY package*.json ./
 
-CMD "http-server", "-p", "8080", "./dist"
+RUN npm install
 
+COPY . .
+
+RUN npm run build
+
+CMD [ "npm", "run", "start:dev" ]

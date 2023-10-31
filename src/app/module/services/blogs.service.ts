@@ -3,12 +3,12 @@ import { CreateBlogDto } from '../dto/create-blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Blog } from '../entity/blog.entity';
-import { Category } from 'src/app/modules/entity/category.entity';
+import { Category } from 'src/app/module/entity/category.entity';
 import { UpdateBlogDto } from '../dto/update-blog.dto';
 import { createReadStream } from 'fs';
 import * as archiver from 'archiver';
 import { Search, SearchBlogDto } from '../dto/search-blog.dto';
-import { User } from 'src/app/modules/entity/user.entity';
+import { User } from 'src/app/module/entity/user.entity';
 
 @Injectable()
 export class BlogsService {
