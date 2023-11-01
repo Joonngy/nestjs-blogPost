@@ -5,7 +5,6 @@ import { AppModule } from './app.module';
 import * as morgan from 'morgan';
 
 async function bootstrap() {
-  console.log('main');
   const app = await NestFactory.create(AppModule);
 
   const prefix = '/api/v1';

@@ -11,8 +11,6 @@ import { dataSourceOptions } from './db/data-source';
 import { FileModule } from './file/file.module';
 import { CommentsModule } from './comments/comments.module';
 
-console.log('module: ' + process.env.NODE_ENV);
-
 @Module({
   imports: [
     ConfigModule.forRoot({
