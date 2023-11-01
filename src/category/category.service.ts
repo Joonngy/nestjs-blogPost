@@ -1,32 +1,32 @@
 import { BadRequestException, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CategoryEntity } from './category.entity';
+import { Category } from './category.entity';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 
 @Injectable()
 export class CategoryService {
   constructor(
-    @InjectRepository(CategoryEntity)
-    private categoryRepository: Repository<CategoryEntity>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
   ) {}
 
-  async create(categoryInfo: CreateCategoryDto): Promise<CategoryEntity> {
+  async create(categoryInfo: CreateCategoryDto): Promise<Category> {
     const categoryExist = await this.categoryRepository.findOne({ where: { name: categoryInfo.name } });
 
     if (categoryExist) {
       throw new UnprocessableEntityException('Category Name Already Exists');
     }
 
-    const category = new CategoryEntity();
+    const category = new Category();
     category.id = categoryInfo.id;
     category.name = categoryInfo.name;
 
     return await this.categoryRepository.save(category);
   }
 
-  async findAll(): Promise<CategoryEntity[]> {
+  async findAll(): Promise<Category[]> {
     const result = await this.categoryRepository.find();
 
     if (result == null) {
@@ -36,7 +36,7 @@ export class CategoryService {
     return result;
   }
 
-  async findOne(name: string): Promise<CategoryEntity> {
+  async findOne(name: string): Promise<Category> {
     const result = await this.categoryRepository.findOne({ where: { name: name } });
 
     if (result == null) {
@@ -46,7 +46,7 @@ export class CategoryService {
     return result;
   }
 
-  async update(name: string, updateCategoryDto: UpdateCategoryDto): Promise<CategoryEntity> {
+  async update(name: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
     const category = await this.categoryRepository.findOne({ where: { name: name } });
 
     if (category == null) {
@@ -68,10 +68,7 @@ export class CategoryService {
   }
 
   async remove(name: string): Promise<boolean> {
-    console.log(name);
     const result = await this.categoryRepository.delete({ name: name });
-
-    console.log(result);
 
     if (result.affected == 0) {
       throw new BadRequestException('No Category Found');

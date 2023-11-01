@@ -1,6 +1,6 @@
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
 
-abstract class BaseEntity {
+abstract class Base {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -8,4 +8,4 @@ abstract class BaseEntity {
   name: string;
 }
 
-export default BaseEntity;
+export default Base;

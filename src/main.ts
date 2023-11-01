@@ -1,12 +1,12 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-
+import { AppModule } from './app.module';
 import * as morgan from 'morgan';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   const prefix = '/api/v1';
   app.setGlobalPrefix(prefix);
   app.enableCors({
@@ -24,7 +24,6 @@ async function bootstrap() {
     }),
   );
   app.use(morgan('dev'));
-  // app.use(cookieParser());
 
   const config = new DocumentBuilder()
     .setTitle('BLOG API')
@@ -50,4 +49,3 @@ async function bootstrap() {
   await app.listen(port);
 }
 bootstrap();
-// http://localhost:3000/api/v1/api-docs

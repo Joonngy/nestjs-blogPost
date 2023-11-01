@@ -1,20 +1,19 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FileEntity } from './file.entity';
+import { File } from './file.entity';
 
 @Injectable()
 export class FileService {
   constructor(
-    @InjectRepository(FileEntity)
-    private databaseFilesRepository: Repository<FileEntity>,
+    @InjectRepository(File)
+    private databaseFilesRepository: Repository<File>,
   ) {}
 
   async uploadDatabaseFile(dataBuffer: Buffer, filename: string) {
-    const newFile = new FileEntity();
+    const newFile = new File();
     newFile.filename = filename;
     newFile.data = dataBuffer;
-    console.log(newFile);
 
     await this.databaseFilesRepository.save(newFile);
     return newFile;

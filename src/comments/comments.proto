@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package comments;
+
+
+service CommentsService {
+  rpc create (number,CreateCommentDto,Buffer,string) returns (CommentEntity) {}
+  rpc findAll () returns (CommentEntity) {}
+}
+
+message CommentEntity {
+  int32 id = 1;
+  string comment = 2;
+  BlogEntity blog = 3;
+  int32 commentBlogId = 4;
+  UserEntity author = 5;
+  int32 commentAuthor = 6;
+  FileEntity attachment = 7;
+  int32 commentAttachmentId = 8;
+}
+ 
+message CreateCommentDto {
+  int32 id = 1;
+  int32 blogId = 2;
+  string comment = 3;
+  any file = 4;
+}

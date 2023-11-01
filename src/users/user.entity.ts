@@ -1,9 +1,10 @@
-import { BlogEntity } from 'src/blogs/blog.entity';
-import { FileEntity } from 'src/file/file.entity';
+import { Blog } from 'src/blogs/blog.entity';
+import { Comment } from 'src/comments/comments.entity';
+import { File } from 'src/file/file.entity';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class UserEntity {
+export class User {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -13,21 +14,23 @@ export class UserEntity {
   @Column({ length: 60, unique: true })
   userName: string;
 
-  @Column({ length: 30 })
+  @Column({ length: 90 })
   password: string;
 
-  @OneToMany(() => BlogEntity, (blogEntity) => blogEntity.author, {
+  @OneToMany(() => Comment, (commentEntity) => commentEntity.author, {
     nullable: true,
   })
-  blog: BlogEntity[];
+  comments: Comment[];
+
+  @OneToMany(() => Blog, (blogEntity) => blogEntity.author, {
+    nullable: true,
+  })
+  blog: Blog[];
 
   @JoinColumn({ name: 'avatarId' })
-  @OneToOne(() => FileEntity, { nullable: true })
-  avatar?: FileEntity;
+  @OneToOne(() => File, { nullable: true })
+  avatar?: File;
 
   @Column({ nullable: true })
   avatarId?: number;
-
-  // @Column({ length: 60 })
-  // signupVerifyToken: string;
 }

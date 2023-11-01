@@ -1,19 +1,20 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserEntity } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserInfo } from './interfaces/user-info.interface';
-import { FileEntity } from 'src/file/file.entity';
 import { FileService } from 'src/file/file.service';
+import { User } from './user.entity';
+import { File } from 'src/file/file.entity';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
-    @InjectRepository(FileEntity)
-    private databaseFilesRepository: Repository<FileEntity>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(File)
+    private databaseFilesRepository: Repository<File>,
     private readonly databaseFilesService: FileService,
   ) {}
 
@@ -52,6 +53,10 @@ export class UsersService {
     return file;
   }
 
+  async hashPassword(password: string) {
+    return await hash(password, 11);
+  }
+
   async createUser(userName: string, email: string, password: string) {
     const userExist = await this.checkUserExists(email);
     if (userExist) {
@@ -63,10 +68,10 @@ export class UsersService {
       throw new UnprocessableEntityException('Use Difference UserName.');
     }
 
-    const user = new UserEntity();
+    const user = new User();
     user.userName = userName;
     user.email = email;
-    user.password = password;
+    user.password = await this.hashPassword(password);
 
     return this.userRepository.save(user);
   }
@@ -91,12 +96,11 @@ export class UsersService {
     return user !== null;
   }
 
-  async findByLogin(email: string, password: string): Promise<UserEntity> {
-    console.log('findByLogin');
-    const user = await this.userRepository.findOne({ where: { email, password } });
+  async findByLogin(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new ForbiddenException('Check ID and Password');
+      throw new ForbiddenException('Check Email ID');
     }
 
     return user;
@@ -108,7 +112,6 @@ export class UsersService {
     if (!result) {
       throw new BadRequestException('ID Does not exist');
     }
-    console.log(result);
     return result;
   }
 
@@ -128,8 +131,7 @@ export class UsersService {
     };
   }
 
-  async findOneByUserName(userName: string): Promise<UserEntity> {
-    console.log(userName);
+  async findOneByUserName(userName: string): Promise<User> {
     const result = await this.userRepository.findOneBy({ userName });
 
     if (result == null) {
@@ -141,8 +143,6 @@ export class UsersService {
 
   async update(req: any, updateUserDto: UpdateUserDto) {
     const checkName: string = req.user.username;
-    console.log(checkName);
-    console.log(updateUserDto);
     const user = await this.userRepository.findOne({ where: { userName: checkName } });
 
     if (user == null) {
@@ -179,7 +179,6 @@ export class UsersService {
     if (user == null) {
       throw new BadRequestException('User does not exist');
     }
-    console.log(user);
     const currentAvatarId = user.avatarId;
 
     const result = await this.userRepository.delete({ id: userId });
@@ -190,7 +189,6 @@ export class UsersService {
 
     if (currentAvatarId) {
       const deleteResult = await this.databaseFilesService.deleteFile(currentAvatarId);
-      console.log('Delete?');
       if (deleteResult !== true) {
         throw new BadRequestException('Cannot Delete File');
       }

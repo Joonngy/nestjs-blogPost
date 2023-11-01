@@ -1,0 +1,89 @@
+# version: '3.7'
+
+# services:
+#   db:
+#     image: postgres
+#     restart: always
+#     environment:
+#       - POSTGRES_HOST=postgres
+#       - POSTGRES_PORT=5432
+#       - POSTGRES_DB= blog_test
+#       - POSTGRES_USER= postgres
+#       - POSTGRES_PASSWORD=postgres
+#     container_name: postgres
+#     volumes:
+#       - ./pgdata:/var/lib/postgresql/data
+#     ports:
+#       - '5432:5432'
+
+#   app:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     container_name: nest-docker-postgres
+#     environment:
+#       - PORT=3000
+#     ports:
+#       - '8080:3000'
+#     depends_on:
+#       - db
+#     volumes:
+#       - ./src:/app/src
+
+
+
+version: '3.7'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - 8080:3000
+    command: npm run start:dev
+    env_file:
+      - .env
+    networks:
+      - webnet
+    depends_on:
+      - postgres
+      - pgadmin
+  postgres:
+    container_name: postgres
+    image: postgres:12
+    restart: always
+    networks:
+      - webnet
+    environment:
+      POSTGRES_HOST: ${DB_HOST}
+      POSTGRES_PORT: ${DB_PORT}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_NAME}
+      # PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    container_name: nest-pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin4
+    ports:
+      - '5050:80'
+    depends_on:
+      - postgres
+networks:
+  webnet:
+volumes:
+  pgdata:

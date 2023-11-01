@@ -1,18 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MulterModule } from '@nestjs/platform-express';
-
 import { FileService } from './file.service';
 import { FileController } from './file.controller';
-import { FileEntity } from './file.entity';
+import { File } from './file.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([FileEntity]),
-    MulterModule.register({
-      dest: './uploads',
-    }),
-  ],
+  imports: [TypeOrmModule.forFeature([File])],
   controllers: [FileController],
   providers: [FileService],
   exports: [FileService],
